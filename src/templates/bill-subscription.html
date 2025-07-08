@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Comprobante de Suscripción</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.5;
+            font-size: 0.95em;
+            color: #333;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 10px;
+        }
+        h3 {
+            color: #2f2b2b;
+            border-bottom: 2px solid #b41322;
+            padding-bottom: 5px;
+        }
+        .date {
+            text-align: right;
+        }
+        .header-logos {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            width: 100%;
+            margin: 0 0 5px 0;
+            padding: 0;
+        }
+        
+        .logo-left {
+            text-align: left;
+            align-self: flex-start;
+            margin: 0;
+            padding: 0;
+        }
+        
+        .logo-right {
+            text-align: right;
+            align-self: flex-end;
+            margin: 0;
+            padding: 0;
+        }
+        
+        .logo-img-dizzb {
+            max-height: 10mm;
+            width: auto;
+            object-fit: contain;
+        }
+
+        .logo-img-wom {
+            max-height: 10mm;
+            width: auto;
+            object-fit: contain;
+        }
+
+        .images-container {
+            display: flex;
+            justify-content: space-between;
+            margin: 10px 0;
+        }
+        .image-wrapper {
+            width: 48%;
+            text-align: center;
+        }
+        .image-wrapper img {
+            max-width: 100%;
+            border: 1px solid #ddd;
+            margin-bottom: 5px;
+        }
+        .optim-image {
+            max-width: 105mm;
+            max-height: 100mm;
+        }
+        .footer {
+            font-size: 0.9em;
+            color: #7f8c8d;
+            border-top: 1px solid #eee;
+            padding-top: 5px;
+        }
+        .page-break {
+            page-break-after: always;
+        }
+    </style>
+</head>
+<body>
+    <div class="header-logos">
+        <div class="logo-left">
+            <img class="logo-img-dizzb" src="{{images.dizzb}}" alt="dizzb">
+        </div>
+        <div class="logo-right">
+            <img class="logo-img-wom" src="{{images.wom}}" alt="wom">
+        </div>
+    </div>
+
+    <h3>Comprobante de suscripción</h3>
+    
+    <div class="date">{{currentDate}}</div>
+    
+    <p>Estimado cliente,</p>
+    
+    <p>Por medio de la presente, confirmamos que se generó una suscripción para la
+    línea <strong>{{msisdn}}</strong> al servicio <strong>{{product}}</strong> el día <strong>{{subscriptionDate}}</strong> a las
+    <strong>{{subscriptionTime}}</strong></p>
+    
+    <p>Como respaldo del proceso, adjuntamos capturas de la landing page utilizada
+    para generar la suscripción:</p>
+    
+    <div class="images-container">
+        <div class="image-wrapper">
+            <p>Vista - Primer Optin</p>
+            <img class="optim-image" src="{{firstOptimImage}}" alt="Primer Optin">
+        </div>
+        <div class="image-wrapper">
+            <p>Vista - Segundo Optin</p>
+            <img class="optim-image" src="{{secondOptimImage}}" alt="Segundo Optin">
+        </div>
+    </div>
+    
+    <p>Pin ingresado en la web: <strong>{{pin}}</strong></p>
+
+    {{#if deactivationDate}}
+        <p>Suscripcion cancelada el día <strong>{{deactivationDate}}</strong> por <strong>{{deactivatedBy}}</strong></p>
+    {{/if}}
+    
+    <div class="footer">
+        <p>Por cualquier duda adicional, comunicate a nuestro call center llamando al 800914296.</p>
+        <p>Muchas gracias por elegirnos.</p>
+    </div>
+</body>
+</html>

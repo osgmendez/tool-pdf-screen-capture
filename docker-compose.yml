@@ -1,0 +1,23 @@
+version: '3.8'
+
+services:
+  pdf-generator:
+    build: .
+    container_name: pdf-generator
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./src:/app/src
+      - ./cache:/app/storage/capture-cache
+      - ./chromium.d.ts:/app/chromium.d.ts
+    environment:
+      - NODE_ENV=development
+      - PORT=3000
+    command: npm run dev:watch
+    networks:
+      - pdf-network
+
+networks:
+  pdf-network:
+    driver: bridge
