@@ -10,20 +10,36 @@ export class Screenshot {
 		this.launchBrowser();
 	}
 
-	private launchBrowser() {
-		this.browser = puppeteer.launch({
-			headless: true,
-			args: [
-				'--no-sandbox',
-				'--disable-setuid-sandbox',
-				'--disable-dev-shm-usage',
-				'--disable-accelerated-2d-canvas',
-				'--no-first-run',
-				'--no-zygote',
-				'--single-process'
-			],
-			executablePath: chromium.path
-		});
+	private async launchBrowser() {
+		try {
+			console.log('[Screenshot] Lanzando navegador Puppeteer/Chromium...');
+			this.browser = puppeteer.launch({
+				headless: true,
+				args: [
+					'--no-sandbox',
+					'--disable-setuid-sandbox',
+					'--disable-dev-shm-usage',
+					'--disable-accelerated-2d-canvas',
+					'--no-first-run',
+					'--no-zygote',
+					'--disable-background-timer-throttling',
+					'--disable-backgrounding-occluded-windows',
+					'--disable-breakpad',
+					'--disable-component-extensions-with-background-pages',
+					'--disable-features=site-per-process',
+					'--disable-ipc-flooding-protection',
+					'--disable-renderer-backgrounding',
+					'--disable-web-security',
+					'--disable-gpu'
+				],
+				executablePath: chromium.path
+			});
+			await this.browser;
+			console.log('[Screenshot] Navegador lanzado correctamente');
+		} catch (err) {
+			console.error('[Screenshot] Error al lanzar navegador:', err);
+			throw err;
+		}
 	}
 
 	public static getInstance(): Screenshot {

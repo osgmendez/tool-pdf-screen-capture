@@ -88,16 +88,17 @@ export class PdfSubscriptionGenerator {
 			return Buffer.from(pdfUint8Array);
 		} catch (error) {
 			console.error('[PDF] generatePDFFromHTML: ERROR', error);
-			throw error;
-		} finally {
-			console.log('[PDF] generatePDFFromHTML: Cerrando página y navegador');
-			await page.close();
+			// Si ocurre un error, cerrar el navegador y relanzar para la próxima vez
 			try {
 				await browser.close();
-				console.log('[PDF] generatePDFFromHTML: Navegador cerrado tras PDF');
+				console.warn('[PDF] generatePDFFromHTML: Navegador cerrado por error, se relanzará en la próxima petición');
 			} catch (closeErr) {
-				console.error('[PDF] generatePDFFromHTML: Error al cerrar navegador', closeErr);
+				console.error('[PDF] generatePDFFromHTML: Error al cerrar navegador tras fallo', closeErr);
 			}
+			throw error;
+		} finally {
+			console.log('[PDF] generatePDFFromHTML: Cerrando página');
+			await page.close();
 		}
 	}
 
