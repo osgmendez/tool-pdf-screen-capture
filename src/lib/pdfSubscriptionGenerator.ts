@@ -81,7 +81,8 @@ export class PdfSubscriptionGenerator {
 					right: '20mm',
 					bottom: '20mm',
 					left: '20mm'
-				}
+				},
+				timeout: 60000 // 60 segundos
 			});
 			console.log('[PDF] generatePDFFromHTML: PDF generado');
 			return Buffer.from(pdfUint8Array);

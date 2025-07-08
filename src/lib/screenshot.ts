@@ -89,6 +89,7 @@ export class Screenshot {
 
 	public async close(): Promise<void> {
 		const browser = await this.browser;
+		console.log('[Screenshot] Cerrando navegador manualmente');
 		await browser.close();
 	}
 }
