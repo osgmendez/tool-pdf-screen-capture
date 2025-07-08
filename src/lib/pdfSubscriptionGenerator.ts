@@ -124,8 +124,8 @@ export class PdfSubscriptionGenerator {
 		const nohe = data.channel === 2 ? `&SponsorId=${sponsorId}` : '&nohe=true';
 		const firstOptimUrl = `${data.landingUrlBase}?msisdn=${msisdn}${nohe}`;
 		const firstOptiLandginName = `${data.product
-			.replace(' ', '_')
-			.toUpperCase()}_INSTITUCIONAL_${data.channel === 2 ? 'HE' : 'WIFI'}`;
+			.replace(' ', '-')
+			.toUpperCase()}-INSTITUCIONAL_${data.channel === 2 ? 'HE' : 'WIFI'}`;
 		console.log(`[PDF] captureScreenshotsWithCache: Capturando screenshot para URL: ${firstOptimUrl}`);
 
 		if (firstOptimUrl) {
@@ -136,8 +136,8 @@ export class PdfSubscriptionGenerator {
 		}
 		const secondOptimUrl = `${data.landingUrlBase}?msisdn=56111111111&nohe=true`;
 		const secondgOptiLandginName = `${data.product
-			.replace(' ', '_')
-			.toUpperCase()}_INSTITUCIONAL_PIN`;
+			.replace(' ', '-')
+			.toUpperCase()}-INSTITUCIONAL_PIN`;
 		console.log(`[PDF] captureScreenshotsWithCache: Capturando screenshot para URL: ${secondOptimUrl}`);
 		if (secondOptimUrl) {
 			data.secondOptimImage = await this.getCachedOrCapture(
