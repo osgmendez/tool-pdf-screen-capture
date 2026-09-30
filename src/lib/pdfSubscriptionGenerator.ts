@@ -3,7 +3,7 @@ import path from 'path';
 // import { fileURLToPath } from 'url';
 import handlebars from 'handlebars';
 import moment from 'moment';
-import { SubscriptionData, PdfGenerationResult } from '../interfaces/types';
+import { SubscriptionData, PdfGenerationResult, PdfRenderOptions } from '../interfaces/types';
 import { Screenshot } from './screenshot';
 
 // const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -27,7 +27,16 @@ export class PdfSubscriptionGenerator {
 		}
 	}
 
-	public async generateSubscriptionPDF(data: SubscriptionData): Promise<PdfGenerationResult> {
+	/** Layout used when the caller does not ask for a specific one. */
+	private defaultTemplate = 'bill-subscription.html';
+
+	/** Page margins used when the layout does not bring its own. */
+	private defaultMargin = { top: '20mm', right: '20mm', bottom: '20mm', left: '20mm' };
+
+	public async generateSubscriptionPDF(
+		data: SubscriptionData,
+		options: PdfRenderOptions = {}
+	): Promise<PdfGenerationResult> {
 		console.log('[PDF] generateSubscriptionPDF: INICIO');
 		try {
 			await this.initCacheDir();
@@ -44,10 +53,13 @@ export class PdfSubscriptionGenerator {
 			await this.captureScreenshotsWithCache(processedData);
 
 			console.log('[PDF] generateSubscriptionPDF: Compilando plantilla HTML');
-			const htmlContent = await this.compileTemplate({ ...processedData, images });
+			const htmlContent = await this.compileTemplate(
+				{ ...processedData, images },
+				options.template
+			);
 
 			console.log('[PDF] generateSubscriptionPDF: Generando PDF con Puppeteer');
-			const pdfBuffer = await this.generatePDFFromHTML(htmlContent);
+			const pdfBuffer = await this.generatePDFFromHTML(htmlContent, options.margin);
 
 			console.log('[PDF] generateSubscriptionPDF: PDF generado correctamente');
 			return {
@@ -61,7 +73,10 @@ export class PdfSubscriptionGenerator {
 		}
 	}
 
-	private async generatePDFFromHTML(html: string): Promise<Buffer> {
+	private async generatePDFFromHTML(
+		html: string,
+		margin?: PdfRenderOptions['margin']
+	): Promise<Buffer> {
 		console.log('[PDF] generatePDFFromHTML: Lanzando navegador');
 		const browser = await this.screenshotService.getBrowser();
 		const page = await browser.newPage();
@@ -76,12 +91,7 @@ export class PdfSubscriptionGenerator {
 			const pdfUint8Array = await page.pdf({
 				format: 'A4',
 				printBackground: true,
-				margin: {
-					top: '20mm',
-					right: '20mm',
-					bottom: '20mm',
-					left: '20mm'
-				},
+				margin: margin || this.defaultMargin,
 				timeout: 60000 // 60 segundos
 			});
 			console.log('[PDF] generatePDFFromHTML: PDF generado');
@@ -185,9 +195,12 @@ export class PdfSubscriptionGenerator {
 		return `data:image/jpeg;base64,${screenshot.toString('base64')}`;
 	}
 
-	private async compileTemplate(data: SubscriptionData): Promise<string> {
+	private async compileTemplate(data: SubscriptionData, templateName?: string): Promise<string> {
 		console.log('[PDF] compileTemplate: Compilando plantilla handlebars');
-		const templatePath = path.join(__dirname, '../templates/bill-subscription.html');
+		// Only a bare file name is accepted, so a caller cannot walk out of the
+		// templates directory.
+		const safe = path.basename(templateName || this.defaultTemplate);
+		const templatePath = path.join(__dirname, '../templates/', safe);
 		console.log('[PDF] compileTemplate: templatePath', templatePath);
 		const source = await fs.readFile(templatePath, 'utf-8');
 		const template = handlebars.compile(source);

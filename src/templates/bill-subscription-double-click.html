@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Comprobante de Suscripción</title>
+    <style>
+        :root {
+            --purple: #3F2A63;
+            --purple-soft: #6E2A8C;
+            --ink: #2B2B33;
+            --muted: #8A8A93;
+            --label: #9A9AA3;
+            --box-bg: #F4F4F7;
+            --box-line: #E3E3E9;
+            --radius: 10px;
+        }
+
+        * {
+            box-sizing: border-box;
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, Helvetica, sans-serif;
+            font-size: 10pt;
+            line-height: 1.45;
+            color: var(--ink);
+        }
+
+        .topbar {
+            height: 6px;
+            background: var(--purple);
+        }
+
+        .page {
+            padding: 12mm 12mm 10mm;
+        }
+
+        .header-logos {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 9mm;
+        }
+
+        .logo-img-dizzb,
+        .logo-img-wom {
+            max-height: 12mm;
+            width: auto;
+            object-fit: contain;
+        }
+
+        h1 {
+            margin: 0;
+            font-size: 22pt;
+            font-weight: bold;
+            color: var(--purple);
+            letter-spacing: -0.3pt;
+        }
+
+        .subtitle {
+            margin: 1mm 0 0;
+            font-size: 9.5pt;
+            color: var(--muted);
+        }
+
+        .label {
+            font-size: 7.5pt;
+            letter-spacing: 0.4pt;
+            text-transform: uppercase;
+            color: var(--label);
+        }
+
+        .value {
+            font-size: 12pt;
+            font-weight: bold;
+            color: var(--ink);
+        }
+
+        .col {
+            width: 50%;
+        }
+
+        /* The traffic origin is a full landing URL, not a short label: it needs
+           to wrap inside its column instead of running off the page. */
+        .value-url {
+            font-size: 8.5pt;
+            font-weight: normal;
+            word-break: break-all;
+            line-height: 1.35;
+        }
+
+        .row {
+            display: flex;
+        }
+
+        .na {
+            color: var(--muted);
+            font-weight: normal;
+            font-style: italic;
+        }
+
+        /* ── caja de datos del alta ───────────────────────────────────── */
+        .info {
+            background: var(--box-bg);
+            border-radius: var(--radius);
+            padding: 6mm 7mm;
+            margin: 7mm 0 8mm;
+        }
+
+        .info-meta {
+            display: flex;
+            margin-top: 5mm;
+        }
+
+        .info-meta .col {
+            display: flex;
+            align-items: baseline;
+        }
+
+        .info-meta .label {
+            margin-right: 4mm;
+        }
+
+        .meta-value {
+            font-size: 10pt;
+            font-weight: bold;
+            color: var(--purple-soft);
+        }
+
+        .meta-value.plain {
+            color: var(--ink);
+        }
+
+        /* ── los dos clics ────────────────────────────────────────────── */
+        .steps {
+            display: flex;
+            margin-bottom: 7mm;
+        }
+
+        .step {
+            width: 50%;
+        }
+
+        .step-head {
+            display: flex;
+            align-items: center;
+            margin-bottom: 3mm;
+        }
+
+        .badge {
+            width: 7mm;
+            height: 7mm;
+            border-radius: 50%;
+            background: var(--purple);
+            color: #fff;
+            font-size: 9pt;
+            font-weight: bold;
+            text-align: center;
+            line-height: 7mm;
+            margin-right: 3mm;
+            flex: 0 0 auto;
+        }
+
+        .step-title {
+            font-size: 10pt;
+            font-weight: bold;
+        }
+
+        .step-stamp {
+            font-size: 12pt;
+            font-weight: bold;
+        }
+
+        .step-tz {
+            font-size: 8.5pt;
+            color: var(--muted);
+        }
+
+        /* ── evidencias ───────────────────────────────────────────────── */
+        .rule {
+            border-top: 1px solid var(--box-line);
+            margin: 6mm 0;
+        }
+
+        .evidence {
+            display: flex;
+            margin-bottom: 5mm;
+        }
+
+        .evidence .col .value {
+            font-size: 11pt;
+        }
+
+        .agent {
+            font-size: 9pt;
+            word-break: break-all;
+            /* The gap before the captures came from .sms, which is optional.
+               Adjacent margins collapse, so this stays 7mm either way. */
+            margin-bottom: 7mm;
+        }
+
+        /* ── SMS ──────────────────────────────────────────────────────── */
+        .sms {
+            background: var(--box-bg);
+            border-left: 3px solid var(--purple);
+            border-radius: 0 var(--radius) var(--radius) 0;
+            padding: 5mm 6mm;
+            margin: 7mm 0;
+        }
+
+        .sms-title {
+            font-size: 10.5pt;
+            font-weight: bold;
+            margin-bottom: 1mm;
+        }
+
+        .sms-sent {
+            font-size: 8.5pt;
+            color: var(--muted);
+            margin-bottom: 3mm;
+        }
+
+        .sms-body {
+            font-size: 9.5pt;
+        }
+
+        /* ── capturas ─────────────────────────────────────────────────── */
+        .captures {
+            display: flex;
+            margin-bottom: 6mm;
+        }
+
+        .capture {
+            width: 50%;
+        }
+
+        .capture:first-child {
+            padding-right: 3mm;
+        }
+
+        .capture:last-child {
+            padding-left: 3mm;
+        }
+
+        .capture-title {
+            font-size: 9.5pt;
+            font-weight: bold;
+            margin-bottom: 2mm;
+        }
+
+        .capture-frame {
+            border: 1px solid var(--box-line);
+            border-radius: var(--radius);
+            padding: 3mm;
+            text-align: center;
+        }
+
+        .optim-image {
+            max-width: 100%;
+            max-height: 62mm;
+        }
+
+        .capture-note {
+            font-size: 7.5pt;
+            color: var(--muted);
+            margin-top: 2mm;
+        }
+
+        /* ── pie ──────────────────────────────────────────────────────── */
+        .disclaimer {
+            font-size: 8pt;
+            color: var(--muted);
+            margin-bottom: 8mm;
+        }
+
+        .footer {
+            border-top: 1px solid var(--box-line);
+            padding-top: 4mm;
+            display: flex;
+            justify-content: space-between;
+            font-size: 8pt;
+            color: var(--muted);
+        }
+
+        .info,
+        .steps,
+        .sms,
+        .captures,
+        .evidence {
+            page-break-inside: avoid;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="topbar"></div>
+
+    <div class="page">
+        <div class="header-logos">
+            <img class="logo-img-dizzb" src="{{images.dizzb}}" alt="dizzb">
+            <img class="logo-img-wom" src="{{images.wom}}" alt="wom">
+        </div>
+
+        <h1>Comprobante de suscripción</h1>
+        <p class="subtitle">Registro del proceso de alta y sus evidencias</p>
+
+        <div class="info">
+            <div class="row">
+                <div class="col">
+                    <div class="label">Línea móvil · MSISDN</div>
+                    <div class="value">{{msisdn}}</div>
+                </div>
+                <div class="col">
+                    <div class="label">Servicio</div>
+                    <div class="value">{{product}}</div>
+                </div>
+            </div>
+            <div class="info-meta">
+                <div class="col">
+                    <span class="label">Flujo de adquisición</span>
+                    <span class="meta-value">{{proof.flow.label}}</span>
+                </div>
+                <div class="col">
+                    <span class="label">Identificación</span>
+                    <span class="meta-value plain">{{proof.flow.identificationLabel}}</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="steps">
+            <div class="step">
+                <div class="step-head">
+                    <div class="badge">1</div>
+                    <div class="step-title">Primer clic · Intención</div>
+                </div>
+                {{#if proof.consent.firstClick.atLabel}}
+                <div class="step-stamp">{{proof.consent.firstClick.atLabel}}</div>
+                {{else}}
+                <div class="step-stamp na">No disponible</div>
+                {{/if}}
+                <div class="step-tz">Zona horaria: {{proof.timezone.label}}</div>
+            </div>
+            <div class="step">
+                <div class="step-head">
+                    <div class="badge">2</div>
+                    <div class="step-title">Segundo clic · Confirmación</div>
+                </div>
+                {{#if proof.consent.secondClick.atLabel}}
+                <div class="step-stamp">{{proof.consent.secondClick.atLabel}}</div>
+                {{else}}
+                <div class="step-stamp na">No disponible</div>
+                {{/if}}
+                <div class="step-tz">Zona horaria: {{proof.timezone.label}}</div>
+            </div>
+        </div>
+
+        <div class="rule"></div>
+
+        <div class="evidence">
+            <div class="col">
+                <div class="label">IP común a ambos clics</div>
+                {{#if proof.consent.ip}}
+                <div class="value">{{proof.consent.ip}}</div>
+                {{else}}
+                <div class="value na">No disponible</div>
+                {{/if}}
+            </div>
+            <div class="col">
+                <div class="label">Origen del tráfico</div>
+                {{#if proof.trafficSource.label}}
+                <div class="value value-url">{{proof.trafficSource.label}}</div>
+                {{else}}
+                <div class="value na">No disponible</div>
+                {{/if}}
+            </div>
+        </div>
+
+        <div class="label">User agent común a ambos clics</div>
+        {{#if proof.consent.userAgent}}
+        <div class="agent">{{proof.consent.userAgent}}</div>
+        {{else}}
+        <div class="agent na">No disponible</div>
+        {{/if}}
+
+        {{#if proof.confirmationSms.available}}
+        <div class="sms">
+            <div class="sms-title">SMS de confirmación de alta</div>
+            <div class="sms-sent">
+                {{#if proof.confirmationSms.sentAtIsApproximate}}
+                Encolado: {{proof.confirmationSms.sentAtLabel}} · estado: {{proof.confirmationSms.status}}
+                {{else}}
+                Enviado: {{proof.confirmationSms.sentAtLabel}}
+                {{/if}}
+            </div>
+            <div class="sms-body">{{proof.confirmationSms.content}}</div>
+        </div>
+        {{/if}}
+
+        <div class="captures">
+            <div class="capture">
+                <div class="capture-title">Vista servida · Primer clic</div>
+                <div class="capture-frame">
+                    <img class="optim-image" src="{{firstOptimImage}}" alt="Primer clic">
+                </div>
+                <div class="capture-note">Captura de la landing vigente al momento de emitir este comprobante.</div>
+            </div>
+            <div class="capture">
+                <div class="capture-title">Vista servida · Segundo clic</div>
+                <div class="capture-frame">
+                    <img class="optim-image" src="{{secondOptimImage}}" alt="Segundo clic">
+                </div>
+                <div class="capture-note">Captura de la landing vigente al momento de emitir este comprobante.</div>
+            </div>
+        </div>
+
+        {{#if deactivationDate}}
+        <div class="evidence">
+            <div class="col">
+                <div class="label">Suscripción cancelada</div>
+                <div class="value">{{proof.deactivation.atLabel}}</div>
+            </div>
+            <div class="col">
+                <div class="label">Cancelada por</div>
+                <div class="value">{{deactivatedBy}}</div>
+            </div>
+        </div>
+        {{/if}}
+
+        <p class="disclaimer">
+            Los horarios registrados pueden presentar pequeñas diferencias de segundos respecto del momento de la
+            acción del usuario, debido a la carga de infraestructura y al procesamiento en cola de los eventos.
+        </p>
+
+        <div class="footer">
+            <span>Consultas: 800914296</span>
+            <span>DIZZB · Comprobante de alta</span>
+        </div>
+    </div>
+</body>
+
+</html>
