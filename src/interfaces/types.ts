@@ -15,6 +15,15 @@ export interface SubscriptionData {
 	images?: any;
 	landingUrlBase?: string;
 	channel?: number;
+	/** Enriched block sent by dizzb-mgmt-be (payloadVersion 2). */
+	proof?: any;
+	payloadVersion?: number;
+}
+
+/** Per-render overrides, so each layout can bring its own page setup. */
+export interface PdfRenderOptions {
+	template?: string;
+	margin?: { top: string; right: string; bottom: string; left: string };
 }
 
 export interface PdfGenerationResult {

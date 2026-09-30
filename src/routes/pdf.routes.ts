@@ -5,3 +5,4 @@ export const pdfRouter = Router();
 const pdfController = new PdfController();
 
 pdfRouter.post('/generate', pdfController.generatePdf);
+pdfRouter.post('/generate-double-click', pdfController.generateDoubleClickPdf);

@@ -32,7 +32,7 @@ export class Screenshot {
 					'--disable-web-security',
 					'--disable-gpu'
 				],
-				executablePath: chromium.path
+				executablePath: process.env.PUPPETEER_EXECUTABLE_PATH || chromium.path
 			});
 			await this.browser;
 			console.log('[Screenshot] Navegador lanzado correctamente');
